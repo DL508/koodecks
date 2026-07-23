@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{TITLE}} · KooDeck</title>
+  <meta name="description" content="{{DESC}}" />
+  <meta property="og:title" content="{{TITLE}}" />
+  <meta property="og:description" content="{{DESC}}" />
+  <meta property="og:image" content="{{IMAGE}}" />
+  <meta property="og:type" content="article" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#4f3ff0" />
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:ital,wght@0,500;0,700;0,800;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/es/styles.css" />
+  <link rel="stylesheet" href="/es/themes.css" />
+  <style>
+    .remix-cta {
+      margin: 26px 0 60px; text-align: center;
+      background: #fff; border: 3px solid var(--ink); border-radius: 22px;
+      padding: 26px 20px; box-shadow: var(--shadow);
+    }
+    .remix-cta h2 { font-family: var(--font-display); font-size: clamp(22px,4vw,30px); margin: 0 0 6px; }
+    .remix-cta p { font-weight: 700; opacity: 0.8; margin: 0 0 16px; }
+    .owner-banner {
+      margin: 0 0 18px; background: #eafff3; border: 2.5px solid var(--ink);
+      border-radius: 16px; padding: 12px 16px; font-weight: 800;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap; box-shadow: var(--shadow);
+    }
+    .owner-banner .grow { flex: 1; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/es/">
+      <span class="brand-mark">▶</span>
+      <span class="brand-name">KooDeck</span>
+    </a>
+  </header>
+
+  <main class="wrap">
+    <div id="owner-banner" class="owner-banner hidden">
+      <span class="grow">🎉 ¡Este deck ya es tuyo! Ponle nombre y compártelo.</span>
+      <button id="owner-name" class="ghost-btn">✏️ Ponle nombre</button>
+    </div>
+
+    <div id="rename-panel" class="rename hidden">
+      <label for="deck-title">Título del deck</label>
+      <input id="deck-title" maxlength="80" placeholder="Mi deck increíble" />
+      <label for="deck-author">Tu nombre (o apodo)</label>
+      <input id="deck-author" maxlength="40" placeholder="p. ej. Sofía R." />
+      <button id="save-name" class="big-btn small">Guardar ✔</button>
+    </div>
+
+    <div class="deck-toolbar">
+      <button id="remix-top" class="ghost-btn">✨ Haz uno igual</button>
+      <div class="toolbar-actions">
+        <a href="/es/app" class="ghost-btn">➕ Nuevo deck</a>
+        <button id="gc-btn" class="ghost-btn" title="Publica este deck como enlace en Google Classroom. Es un resumen hecho con IA — revísalo antes de asignarlo.">📚 Google Classroom</button>
+        <button id="img-btn" class="ghost-btn">🖼️ Guardar imagen</button>
+        <button id="copy-btn" class="big-btn small">Copiar enlace 🔗</button>
+      </div>
+    </div>
+
+    <div id="deck-root"></div>
+
+    <section class="remix-cta">
+      <h2>¿Te gustó este deck? ¡Hazlo tuyo! ✨</h2>
+      <p>Las mismas ideas, con tu estilo y tu nombre — en un toque. Sin registrarte.</p>
+      <button id="remix-open" class="big-btn" style="max-width:340px;">Haz uno igual</button>
+
+      <div id="remix-panel" class="maker hidden" style="margin-top:20px; text-align:left;">
+        <label class="field-label">Elige tu estilo</label>
+        <div id="remix-themes" class="theme-row" role="radiogroup" aria-label="Estilo">
+          <button type="button" class="theme-pick" data-theme="space"><span class="swatch sw-space"></span>Espacio</button>
+          <button type="button" class="theme-pick" data-theme="ocean"><span class="swatch sw-ocean"></span>Océano</button>
+          <button type="button" class="theme-pick" data-theme="jungle"><span class="swatch sw-jungle"></span>Selva</button>
+          <button type="button" class="theme-pick" data-theme="candy"><span class="swatch sw-candy"></span>Fiesta</button>
+          <button type="button" class="theme-pick" data-theme="comic"><span class="swatch sw-comic"></span>Lucha</button>
+          <button type="button" class="theme-pick" data-theme="notebook"><span class="swatch sw-notebook"></span>Cuaderno</button>
+        </div>
+        <label class="field-label" for="remix-title">Ponle un título</label>
+        <div class="url-row"><input id="remix-title" maxlength="80" placeholder="Mi versión" /></div>
+        <label class="field-label" for="remix-author">Tu nombre (o apodo)</label>
+        <div class="url-row"><input id="remix-author" maxlength="40" placeholder="p. ej. Diego M." /></div>
+        <input id="hp-website" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true"
+               style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" />
+        <button id="remix-make" class="big-btn" type="button">Crear mi versión 🎉</button>
+        <p id="remix-err" class="error hidden" role="alert"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Hecho con KooDeck · Los decks son resúmenes hechos con IA — siempre verifica los datos importantes con tu maestra o maestro.</p>
+  </footer>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script id="deck-data" type="application/json">{{DECK_JSON}}</script>
+  <script src="/es/renderer.js"></script>
+  <script src="/es/classroom.js"></script>
+  <script>
+    (function () {
+      const deck = JSON.parse(document.getElementById("deck-data").textContent);
+      const $ = (id) => document.getElementById(id);
+      renderDeck(deck, $("deck-root"));
+
+      const toast = (m) => {
+        const t = $("toast");
+        t.textContent = m; t.classList.remove("hidden");
+        clearTimeout(t._t); t._t = setTimeout(() => t.classList.add("hidden"), 2600);
+      };
+
+      $("copy-btn").addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText(location.origin + location.pathname); toast("¡Enlace copiado! 📋"); }
+        catch (e) { toast(location.origin + location.pathname); }
+      });
+
+      $("gc-btn").addEventListener("click", () => {
+        const deckUrl = location.origin + location.pathname;
+        const shareUrl = KooDeckClassroom.classroomShareUrl(deckUrl, deck.title);
+        window.open(shareUrl, "_blank", "noopener");
+        toast("Abriendo Google Classroom — elige tu clase para publicarlo 📚");
+      });
+
+      $("img-btn").addEventListener("click", async () => {
+        toast("Creando tu imagen… 🖼️");
+        try {
+          const res = await fetch(location.pathname.replace(/\/$/, "") + "/image.png");
+          if (!res.ok) throw new Error();
+          const blob = await res.blob();
+          const file = new File([blob], deck.slug + ".png", { type: "image/png" });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try { await navigator.share({ files: [file], title: deck.title }); return; } catch (e) {}
+          }
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url; a.download = file.name;
+          document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 4000);
+          toast("¡Imagen guardada! Publícala donde quieras 🎉");
+        } catch (e) { toast("No se pudo crear la imagen — inténtalo de nuevo"); }
+      });
+
+      // ---- remix: "Haz uno igual" ----
+      let remixTheme = deck.theme || "space";
+      function paintRemixThemes() {
+        document.querySelectorAll("#remix-themes .theme-pick").forEach((b) =>
+          b.classList.toggle("selected", b.dataset.theme === remixTheme));
+      }
+      function openRemix() {
+        $("remix-panel").classList.remove("hidden");
+        $("remix-title").value = deck.title ? deck.title + " (mi versión)" : "";
+        paintRemixThemes();
+        $("remix-panel").scrollIntoView({ behavior: "smooth", block: "center" });
+        $("remix-author").focus();
+      }
+      $("remix-open").addEventListener("click", openRemix);
+      $("remix-top").addEventListener("click", openRemix);
+      $("remix-themes").addEventListener("click", (e) => {
+        const b = e.target.closest(".theme-pick");
+        if (!b) return;
+        remixTheme = b.dataset.theme; paintRemixThemes();
+      });
+      $("remix-make").addEventListener("click", async () => {
+        $("remix-err").classList.add("hidden");
+        $("remix-make").disabled = true;
+        $("remix-make").textContent = "Creando… ✨";
+        try {
+          const res = await fetch("/api/decks/" + deck.slug + "/remix", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              theme: remixTheme,
+              title: $("remix-title").value,
+              authorName: $("remix-author").value,
+              website: $("hp-website").value,
+            }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            $("remix-err").textContent = data.error || "Algo salió mal. Inténtalo de nuevo.";
+            $("remix-err").classList.remove("hidden");
+            $("remix-make").disabled = false;
+            $("remix-make").textContent = "Crear mi versión 🎉";
+            return;
+          }
+          location.href = "/d/" + data.slug + "#k=" + encodeURIComponent(data.editKey);
+        } catch (e) {
+          $("remix-err").textContent = "No pudimos conectar con KooDeck. Inténtalo de nuevo.";
+          $("remix-err").classList.remove("hidden");
+          $("remix-make").disabled = false;
+          $("remix-make").textContent = "Crear mi versión 🎉";
+        }
+      });
+
+      // ---- herramientas del dueño (solo con la clave de edición) ----
+      function getEditKey() {
+        const m = location.hash.match(/[#&]k=([^&]+)/);
+        return m ? decodeURIComponent(m[1]) : null;
+      }
+      const editKey = getEditKey();
+      if (editKey) {
+        $("owner-banner").classList.remove("hidden");
+        $("deck-title").value = deck.title || "";
+        $("deck-author").value = deck.authorName || "";
+        $("owner-name").addEventListener("click", () => $("rename-panel").classList.toggle("hidden"));
+        $("save-name").addEventListener("click", async () => {
+          const res = await fetch("/api/decks/" + deck.slug, {
+            method: "PATCH",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ title: $("deck-title").value, authorName: $("deck-author").value, editKey: editKey }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            renderDeck(data.deck, $("deck-root"));
+            deck.title = data.deck.title; deck.authorName = data.deck.authorName;
+            $("rename-panel").classList.add("hidden");
+            toast("Guardado ✔");
+          } else {
+            toast("No se pudo guardar — inténtalo de nuevo");
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

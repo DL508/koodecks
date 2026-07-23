@@ -1,0 +1,37 @@
+{
+  "name": "koodeck",
+  "version": "1.0.0",
+  "description": "KooDeck \u2014 bilingual (English + Spanish) single-server build. English at /, Spanish at /es/, shared accounts and deck store.",
+  "main": "server.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node scripts/selftest.js && node scripts/mobile-test.js && node scripts/image-test.js && node scripts/remix-test.js && node scripts/landing-test.js && node scripts/classroom-test.js && node scripts/game-test.js && node scripts/security-test.js && node scripts/auth-test.js && node scripts/merge-test.js",
+    "test:functional": "node scripts/selftest.js",
+    "test:mobile": "node scripts/mobile-test.js",
+    "test:image": "node scripts/image-test.js",
+    "test:remix": "node scripts/remix-test.js",
+    "test:landing": "node scripts/landing-test.js",
+    "test:classroom": "node scripts/classroom-test.js",
+    "icons": "node scripts/make-icons.js",
+    "test:game": "node scripts/game-test.js",
+    "test:site": "node scripts/site-validate.js",
+    "test:security": "node scripts/security-test.js",
+    "test:auth": "node scripts/auth-test.js",
+    "test:e2e": "node scripts/e2e-validate.js",
+    "test:merge": "node scripts/merge-test.js"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "@twemoji/svg": "^15.0.0",
+    "express": "^4.19.2",
+    "youtube-transcript": "^1.2.1"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1"
+  }
+}

@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KooDeck — Live Demo</title>
+  <meta name="description" content="Try KooDeck: turn a YouTube video into a kid-friendly infographic deck. Interactive demo — no sign-up." />
+  <meta name="theme-color" content="#4f3ff0" />
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:ital,wght@0,500;0,700;0,800;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/themes.css" />
+  <style>
+    .demo-banner {
+      width: min(880px, 92vw); margin: 12px auto 0;
+      background: var(--ink); color: #fff; border-radius: 14px;
+      padding: 12px 18px; font-weight: 800; font-size: 14px;
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    }
+    .demo-banner .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 4px rgba(46,196,165,.3); }
+    .demo-banner a { color: var(--sun); }
+    .samples { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 14px; margin-top: 8px; }
+    .sample-card {
+      text-align: left; cursor: pointer; background: #fff;
+      border: 2.5px solid var(--ink); border-radius: 18px; padding: 0; overflow: hidden;
+      box-shadow: var(--shadow); transition: transform .08s ease;
+    }
+    .sample-card:hover { transform: translateY(-3px); }
+    .sample-thumb { height: 96px; display: grid; place-items: center; font-size: 44px; }
+    .sample-body { padding: 12px 14px 14px; }
+    .sample-body h3 { font-family: var(--font-display); margin: 0 0 2px; font-size: 17px; }
+    .sample-body p { margin: 0; font-weight: 700; font-size: 13px; opacity: .7; }
+    .sample-meta { font-size: 12px; font-weight: 800; opacity:.55; margin-top:6px; }
+    /* pipeline animation */
+    .pipe { width: min(560px, 92vw); margin: 4vh auto 0; }
+    .stage {
+      display: flex; gap: 14px; align-items: flex-start;
+      background: #fff; border: 2.5px solid var(--ink); border-radius: 18px;
+      padding: 16px 18px; margin-bottom: 14px; box-shadow: var(--shadow);
+      opacity: .35; transition: opacity .4s ease;
+    }
+    .stage.active { opacity: 1; }
+    .stage.done { opacity: 1; }
+    .stage-icon { font-size: 30px; line-height: 1; }
+    .stage h3 { font-family: var(--font-display); margin: 0 0 4px; font-size: 18px; }
+    .stage p { margin: 0; font-weight: 700; font-size: 14px; opacity: .8; }
+    .stage-status { margin-left: auto; font-size: 22px; }
+    .spin-mini { display:inline-block; animation: spin 1s linear infinite; }
+    .live-controls {
+      display:flex; gap:18px; flex-wrap:wrap; align-items:center;
+      background:#fff; border:2.5px solid var(--ink); border-radius:16px;
+      padding:12px 16px; margin-bottom:16px; box-shadow: var(--shadow);
+    }
+    .live-controls .grp { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .live-controls label { font-family:var(--font-display); font-weight:700; font-size:14px; }
+    .mini-chip { font:inherit; font-weight:800; font-size:13px; cursor:pointer; padding:9px 14px; min-height:40px; border-radius:999px; border:2px solid var(--ink); background:#fff; }
+    .mini-chip.on { background: var(--sun); }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">▶</span><span class="brand-name">KooDeck</span></a>
+    <span class="brand-tag">interactive demo</span>
+  </header>
+
+  <div class="demo-banner">
+    <span class="dot"></span>
+    <span>Demo mode — these decks are pre-generated so you can explore instantly, no API key or sign-up needed.</span>
+    <span>The real app builds these live from any YouTube link. <a href="/app">Open the real app →</a></span>
+  </div>
+
+  <!-- Picker -->
+  <main id="d-pick" class="wrap">
+    <section class="hero" style="margin-top:22px;">
+      <h1>See it <span class="hl">in action.</span></h1>
+      <p class="hero-sub">Pick a sample video below. Watch KooDeck pull out the big ideas and design a deck — then play with the themes and grade levels yourself.</p>
+      <div class="samples" id="sample-grid"></div>
+    </section>
+  </main>
+
+  <!-- Pipeline animation -->
+  <main id="d-run" class="wrap hidden">
+    <div class="pipe">
+      <div class="stage" id="st0">
+        <span class="stage-icon">📝</span>
+        <div><h3>Reading the captions</h3><p id="st0p">Grabbing what was actually said…</p></div>
+        <span class="stage-status" id="st0s"></span>
+      </div>
+      <div class="stage" id="st1">
+        <span class="stage-icon">🧑‍🏫</span>
+        <div><h3>Stage 1 · The teacher</h3><p id="st1p">Pulling out the substance, skipping the fluff…</p></div>
+        <span class="stage-status" id="st1s"></span>
+      </div>
+      <div class="stage" id="st2">
+        <span class="stage-icon">🎨</span>
+        <div><h3>Stage 2 · The designer</h3><p id="st2p">Arranging cards for the best reading flow…</p></div>
+        <span class="stage-status" id="st2s"></span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Result -->
+  <main id="d-deck" class="wrap hidden">
+    <div class="deck-toolbar">
+      <button class="ghost-btn" id="back-btn">← Try another video</button>
+      <div class="toolbar-actions">
+        <button class="big-btn small" id="demo-share">Share 🔗</button>
+      </div>
+    </div>
+
+    <div class="live-controls">
+      <div class="grp">
+        <label>Theme:</label>
+        <span id="theme-chips"></span>
+      </div>
+      <div class="grp">
+        <label>Reading level:</label>
+        <span id="grade-chips"></span>
+      </div>
+    </div>
+
+    <div id="deck-root"></div>
+  </main>
+
+  <footer class="foot">
+    <p>Demo · Decks are AI summaries — always double-check important facts with your teacher.</p>
+  </footer>
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/renderer.js"></script>
+  <script src="/demo-data.js"></script>
+  <script>
+  (function () {
+    const $ = (id) => document.getElementById(id);
+    const views = { pick: $("d-pick"), run: $("d-run"), deck: $("d-deck") };
+    const show = (n) => { Object.entries(views).forEach(([k,v]) => v.classList.toggle("hidden", k!==n)); window.scrollTo({top:0}); };
+    const toast = (m) => { const t=$("toast"); t.textContent=m; t.classList.remove("hidden"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.add("hidden"),2400); };
+
+    const THEMES = [["space","Space"],["ocean","Ocean"],["jungle","Jungle"],["candy","Candy"],["comic","Comic"],["notebook","Notebook"]];
+    const GRADES = [["k2","K–2"],["35","3–5"],["68","6–8"],["912","9–12"]];
+
+    let active = null; // { sampleId, theme, grade }
+
+    // Build picker
+    const grid = $("sample-grid");
+    DEMO_SAMPLES.forEach((s) => {
+      const el = document.createElement("button");
+      el.className = "sample-card";
+      el.innerHTML = `
+        <div class="sample-thumb" style="background:${s.thumbBg}">${s.emoji}</div>
+        <div class="sample-body">
+          <h3>${s.videoTitle}</h3>
+          <p>${s.channel}</p>
+          <div class="sample-meta">⏱ ${s.length} → 30-second deck</div>
+        </div>`;
+      el.addEventListener("click", () => runPipeline(s));
+      grid.appendChild(el);
+    });
+
+    // Fake-but-honest pipeline animation, then render the pre-generated deck.
+    function setStage(i, state, msg) {
+      const box = $("st"+i), status = $("st"+i+"s"), p = $("st"+i+"p");
+      box.classList.toggle("active", state==="active");
+      box.classList.toggle("done", state==="done");
+      status.innerHTML = state==="active" ? '<span class="spin-mini">⏳</span>' : state==="done" ? "✅" : "";
+      if (msg) p.textContent = msg;
+    }
+    function runPipeline(sample) {
+      active = { sample, theme: sample.defaultTheme || "space", grade: sample.defaultGrade || "35" };
+      show("run");
+      ["st0","st1","st2"].forEach((id) => { $(id).classList.remove("active","done"); $(id+"s").innerHTML=""; });
+      const steps = [
+        () => setStage(0,"active"),
+        () => { setStage(0,"done","Got the transcript — 2,400 words."); setStage(1,"active"); },
+        () => setStage(1,"active","Found 1 big idea, 3 key points, 2 numbers…"),
+        () => { setStage(1,"done","Rewrote it all for the reading level."); setStage(2,"active"); },
+        () => setStage(2,"active","Choosing card sizes and emoji…"),
+        () => { setStage(2,"done","Deck designed!"); openDeck(); },
+      ];
+      let i = 0;
+      (function tick(){ if(i<steps.length){ steps[i++](); setTimeout(tick, i===1?500:900); } })();
+    }
+
+    function buildDeckObject() {
+      const s = active.sample;
+      return {
+        slug: s.id, theme: active.theme, gradeBand: active.grade,
+        title: s.grades[active.grade].title,
+        authorName: s.authorName || "",
+        videoId: s.videoId, videoTitle: s.videoTitle, videoThumb: "",
+        substance: s.grades[active.grade].substance,
+        layout: s.layout,
+      };
+    }
+
+    function chipRow(container, items, current, onPick) {
+      container.innerHTML = "";
+      items.forEach(([val,label]) => {
+        const b = document.createElement("button");
+        b.className = "mini-chip" + (val===current ? " on" : "");
+        b.textContent = label;
+        b.addEventListener("click", () => onPick(val));
+        container.appendChild(b);
+      });
+    }
+
+    function openDeck() {
+      renderDeck(buildDeckObject(), $("deck-root"));
+      chipRow($("theme-chips"), THEMES, active.theme, (v) => { active.theme=v; openDeck(); });
+      chipRow($("grade-chips"), GRADES, active.grade, (v) => { active.grade=v; openDeck(); });
+      show("deck");
+    }
+
+    $("back-btn").addEventListener("click", () => show("pick"));
+    $("demo-share").addEventListener("click", () => toast("In the real app, this copies a public share link 🔗"));
+  })();
+  </script>
+</body>
+</html>

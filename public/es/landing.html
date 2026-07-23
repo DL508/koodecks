@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KooDeck — convierte cualquier video en un deck que a los niños les encanta</title>
+  <meta name="description" content="Pega un enlace de YouTube y recibe un resumen visual de una página — para estudiantes de Primaria, Secundaria y Prepa. Gratis y sin crear cuenta." />
+  <meta name="theme-color" content="#4f3ff0" />
+  <meta property="og:title" content="KooDeck — convierte cualquier video en un deck que a los niños les encanta" />
+  <meta property="og:description" content="Un video de 40 minutos se vuelve un resumen visual de una página que se lee en 30 segundos." />
+  <meta property="og:type" content="website" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:ital,wght@0,500;0,700;0,800;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/es/styles.css" />
+  <link rel="stylesheet" href="/es/landing.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/es/">
+      <span class="brand-mark">▶</span>
+      <span class="brand-name">KooDeck</span>
+    </a>
+    <nav class="topnav">
+      <a href="#examples">Ejemplos</a>
+      <a href="/es/play">Reto Diario</a>
+      <a href="#how">Cómo funciona</a>
+      <a href="/es/pricing">Precios</a>
+      <a href="/es/login" id="nav-login">Iniciar sesión</a>
+      <a class="nav-cta" href="/es/app">Pruébalo gratis</a>
+      <div class="lang" id="lang-menu" data-alt="{{ALT_URL}}">
+        <button id="lang-btn" class="lang-btn" aria-haspopup="true" aria-expanded="false" title="Idioma / Language">🌐 <span class="lang-cur">ES</span> ▾</button>
+        <div id="lang-drop" class="lang-drop hidden" role="menu">
+          <a href="/" class="lang-item" role="menuitem">🇺🇸 English</a>
+          <a href="/es/" class="lang-item on" role="menuitem">🇲🇽 Español <span class="lang-check">✓</span></a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <main class="wrap">
+    <section class="hero-land">
+      <div class="hero-copy">
+        <span class="pill">🎈 De Primaria a Prepa · Ideal para familias y docentes</span>
+        <h1>Convierte cualquier video en un deck que a los niños <span class="hl">les encanta.</span></h1>
+        <p class="lede">Pega un enlace de YouTube y KooDeck lo convierte en un resumen visual de una página con las ideas más importantes — al nivel de lectura de tu hijo o hija, listo para leerse en 30 segundos y compartirse con toda la clase.</p>
+        <div class="hero-btns">
+          <a href="/es/app" class="big-btn hero-primary">Pruébalo gratis ✨</a>
+          <a href="#examples" class="ghost-btn">Ver ejemplos ↓</a>
+        </div>
+        <p class="trust">Sin crear cuenta · Gratis · Funciona en celulares, tabletas y Chromebooks</p>
+      </div>
+
+      <!-- Registro rápido -->
+      <aside class="signup-card" id="signup">
+        <h2>Aparta tu lugar</h2>
+        <p class="signup-sub">Déjanos un correo y te mandamos una guía para empezar y las novedades. (Totalmente opcional — ¡también puedes crear decks de una vez!)</p>
+        <div class="role-row" id="roles" role="radiogroup" aria-label="Yo soy">
+          <button type="button" class="role on" data-role="teacher">👩‍🏫 Docente</button>
+          <button type="button" class="role" data-role="parent">👨‍👧 Mamá o Papá</button>
+          <button type="button" class="role" data-role="student">🎒 Estudiante</button>
+        </div>
+        <div class="signup-row">
+          <input id="email" type="email" inputmode="email" placeholder="tu@correo.com" autocomplete="email" />
+          <button id="signup-btn" class="big-btn small">Comenzar</button>
+        </div>
+        <!-- honeypot: invisible para personas, irresistible para bots -->
+        <input id="hp-website" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true"
+               style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" />
+        <div id="ts-box" class="ts-box" data-tskey="{{TS_KEY}}"></div>
+        <p id="signup-msg" class="signup-msg hidden"></p>
+      </aside>
+    </section>
+
+    <!-- EJEMPLOS -->
+    <section id="examples" class="section">
+      <h2 class="section-title">Míralo en acción</h2>
+      <p class="section-sub">Decks reales hechos de videos reales. Abre uno y toca <b>“Haz uno igual”</b> para probarlo tú.</p>
+      <div class="ex-grid" id="ex-grid"><!-- se llena con el script --></div>
+      <div class="center"><a href="/es/demo.html" class="ghost-btn">▶ Prueba la demo interactiva</a></div>
+    </section>
+
+    <!-- RETO DIARIO -->
+    <section id="play" class="section">
+      <div class="dash-banner">
+        <div class="dash-copy">
+          <span class="dash-tag">🎮 Nuevo</span>
+          <h2>Reto Diario — 5 preguntas. 60 segundos.</h2>
+          <p>Todos reciben las <b>mismas cinco preguntas</b> cada día. Juega, consigue tu tarjeta de puntaje con emojis y reta a tus amigos a superarte — o elige un paquete de cualquier tema. Sin registro.</p>
+          <div class="dash-row">
+            <a href="/es/play" class="big-btn hero-primary">Jugar el Reto de hoy ⚡</a>
+            <span class="dash-sample">🟩⚡🟩🟥⚡ 540 pts — ¡gánale!</span>
+          </div>
+        </div>
+        <div class="dash-emoji" aria-hidden="true">⚡</div>
+      </div>
+    </section>
+
+    <!-- CÓMO FUNCIONA -->
+    <section id="how" class="section">
+      <h2 class="section-title">¿Cómo funciona?</h2>
+      <div class="how-grid">
+        <div class="how-card"><span class="how-emoji">🔗</span><h3>1 · Pega el enlace</h3><p>Cualquier video de YouTube con subtítulos — una clase, un tutorial, un documental.</p></div>
+        <div class="how-card"><span class="how-emoji">🎯</span><h3>2 · Elige el grado</h3><p>Primaria 1º–2º, 3º–6º, Secundaria o Prepa. Las palabras y el nivel de lectura se ajustan a la edad.</p></div>
+        <div class="how-card"><span class="how-emoji">🎨</span><h3>3 · Comparte el deck</h3><p>Ponle nombre, elige un estilo divertido y manda un solo enlace — publícalo en <b>Google Classroom</b> con un toque o guárdalo como imagen.</p></div>
+      </div>
+    </section>
+
+    <!-- PARA QUIÉN -->
+    <section class="section">
+      <h2 class="section-title">Hecho para el salón de clases y para la casa</h2>
+      <div class="who-grid">
+        <div class="who-card who-teacher">
+          <span class="who-emoji">👩‍🏫</span>
+          <h3>Docentes</h3>
+          <p>Convierte un video de tarea en un repaso de una página. Arma el material de una unidad en minutos y deja que tus estudiantes hagan sus propias versiones.</p>
+        </div>
+        <div class="who-card who-student">
+          <span class="who-emoji">🎒</span>
+          <h3>Estudiantes</h3>
+          <p>Quédate con las grandes ideas sin volver a ver un video de 40 minutos. Haz un deck con tu nombre y compártelo con tus amigos y tu equipo de estudio.</p>
+        </div>
+        <div class="who-card who-parent">
+          <span class="who-emoji">👨‍👧</span>
+          <h3>Familias</h3>
+          <p>Ayuda con la tarea aunque el tema sea nuevo para ti. Un resumen claro y al nivel de tus hijos que pueden repasar juntos en un par de minutos.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="final-cta">
+      <h2>¿Armamos tu primer deck?</h2>
+      <p>Toma unos 30 segundos y es gratis.</p>
+      <a href="/es/app" class="big-btn hero-primary">Crear un deck ahora ✨</a>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Hecho con KooDeck · Los decks son resúmenes hechos con IA — siempre verifica los datos importantes con tu maestra o maestro.
+       <br /><a href="/es/app">Abrir la app</a> · <a href="/es/play">Reto Diario</a> · <a href="/es/demo.html">Demo interactiva</a></p>
+  </footer>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script>
+  (function () {
+    const $ = (id) => document.getElementById(id);
+    const toast = (m) => { const t=$("toast"); t.textContent=m; t.classList.remove("hidden"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.add("hidden"),2600); };
+
+    // ---- tarjetas de ejemplo (usan las imágenes reales de cada deck) ----
+    const EXAMPLES = [
+      { slug: "ejemplo-ciclo-agua",    subject: "Ciencias",    emoji: "💧", title: "El increíble viaje del agua",    tint: "#8fd8ef" },
+      { slug: "ejemplo-fracciones",    subject: "Matemáticas", emoji: "🍕", title: "Fracciones: repartir parejo",    tint: "#ffd3ea" },
+      { slug: "ejemplo-fotosintesis",  subject: "Ciencias",    emoji: "🌱", title: "La receta secreta de las hojas", tint: "#dff2bd" },
+      { slug: "ejemplo-sistema-solar", subject: "Espacio",     emoji: "🪐", title: "Un paseo por el sistema solar",  tint: "#c9c2ff" },
+    ];
+    const grid = $("ex-grid");
+    EXAMPLES.forEach((e) => {
+      const a = document.createElement("a");
+      a.className = "ex-card";
+      a.href = "/d/" + e.slug;
+      a.innerHTML =
+        '<div class="ex-thumb" style="background:' + e.tint + '">' +
+          '<img loading="lazy" alt="Vista previa de ' + e.title + '" src="/d/' + e.slug + '/image.png" />' +
+        '</div>' +
+        '<div class="ex-body">' +
+          '<span class="ex-badge">' + e.emoji + ' ' + e.subject + '</span>' +
+          '<h3>' + e.title + '</h3>' +
+          '<span class="ex-open">Abrir deck →</span>' +
+        '</div>';
+      grid.appendChild(a);
+    });
+
+    // ---- selector de rol ----
+    let role = "teacher";
+    $("roles").addEventListener("click", (ev) => {
+      const b = ev.target.closest(".role");
+      if (!b) return;
+      role = b.dataset.role;
+      [...$("roles").children].forEach((c) => c.classList.toggle("on", c === b));
+    });
+
+    // ---- registro ----
+    $("signup-btn").addEventListener("click", async () => {
+      const email = $("email").value.trim();
+      const msg = $("signup-msg");
+      msg.classList.remove("hidden", "ok", "bad");
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        msg.textContent = "Escribe un correo electrónico válido, por favor.";
+        msg.classList.add("bad");
+        return;
+      }
+      $("signup-btn").disabled = true;
+      try {
+        const res = await fetch("/api/signups", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ email, role, website: $("hp-website").value, turnstileToken: window.__tsToken || "" }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok) {
+          msg.innerHTML = "¡Listo! 🎉 <a href='/app'>Crea tu primer deck →</a>";
+          msg.classList.add("ok");
+          $("email").value = "";
+        } else {
+          msg.textContent = data.error || "Algo salió mal. Inténtalo de nuevo.";
+          msg.classList.add("bad");
+        }
+      } catch (e) {
+        msg.textContent = "No pudimos conectar con KooDeck. Inténtalo de nuevo.";
+        msg.classList.add("bad");
+      } finally {
+        $("signup-btn").disabled = false;
+      }
+    });
+    $("email").addEventListener("keydown", (e) => { if (e.key === "Enter") $("signup-btn").click(); });
+
+    // ---- Cloudflare Turnstile (solo si la clave está configurada) ----
+    const tsBox = $("ts-box");
+    const tsKey = (tsBox.dataset.tskey || "").trim();
+    if (tsKey && !tsKey.includes("{")) {
+      const sc = document.createElement("script");
+      sc.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=__tsReady";
+      sc.async = true; sc.defer = true;
+      window.__tsReady = () => {
+        window.turnstile.render(tsBox, { sitekey: tsKey, callback: (t) => { window.__tsToken = t; } });
+      };
+      document.head.appendChild(sc);
+    }
+
+    // ---- reflejar estado de sesión ----
+    fetch("/api/auth/me").then((r) => r.json()).then((d) => {
+      const nl = $("nav-login");
+      if (nl && d.user) { nl.textContent = "Mi cuenta"; nl.href = "/account"; }
+    }).catch(() => {});
+
+    // ---- selector de idioma ----
+    // Same-domain switcher: English at "/", Spanish at "/es/". Always available.
+    $("lang-btn").addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = !$("lang-drop").classList.toggle("hidden");
+      $("lang-btn").setAttribute("aria-expanded", String(open));
+    });
+    document.addEventListener("click", () => $("lang-drop").classList.add("hidden"));
+  })();
+  </script>
+</body>
+</html>

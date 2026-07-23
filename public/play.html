@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daily Dash · KooDeck — 5 questions. 60 seconds. Beat your friends.</title>
+  <meta name="description" content="Play today's Daily Dash — the same 5 quick questions for everyone — or pick a pack. Grab your emoji score card and challenge your friends. No sign-up." />
+  <meta name="theme-color" content="#4f3ff0" />
+  <meta property="og:title" content="Daily Dash · KooDeck" />
+  <meta property="og:description" content="5 questions. 60 seconds. The same dash for everyone today — think you can beat your friends?" />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:ital,wght@0,500;0,700;0,800;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/dash.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">▶</span><span class="brand-name">KooDeck</span></a>
+    <span id="streak-pill" class="streak hidden">🔥 <b id="streak-n">0</b> day streak</span>
+  </header>
+
+  <!-- HOME -->
+  <main id="v-home" class="wrap">
+    <section class="hero">
+      <h1>Daily Dash<br /><span class="hl">Ready, set, go!</span></h1>
+      <p class="sub">5 questions, everyone gets the same ones today. Answer fast for bonus points, grab your emoji score card, and dare your friends to beat it.</p>
+
+      <button id="daily-btn" class="big-card daily">
+        <span class="bc-emoji" id="daily-emoji">📅</span>
+        <span class="bc-text">
+          <b>Play today's Daily Dash</b>
+          <small id="daily-title">The same 5 questions for everyone today</small>
+        </span>
+        <span class="bc-go">▶</span>
+      </button>
+
+      <div id="challenge-banner" class="challenge-banner hidden">
+        <span id="challenge-text"></span>
+        <button id="challenge-play" class="mini-go">Accept ⚡</button>
+      </div>
+
+      <h2 class="packs-h">Or pick a pack</h2>
+      <div id="pack-grid" class="pack-grid"></div>
+
+      <div class="bd-home-cta">
+        <span>📚 Done dashing? Turn any YouTube video into a study deck.</span>
+        <a href="/app" class="ghost-btn">Make a deck ✨</a>
+      </div>
+    </section>
+    <footer class="foot">Part of KooDeck · Questions are school-checked, but keep learning with your teacher! · <a href="/">Home</a></footer>
+  </main>
+
+  <!-- GAME -->
+  <main id="v-game" class="wrap hidden">
+    <div class="hud">
+      <span id="hud-q">1/5</span>
+      <span id="hud-streak" class="hidden">🔥 x<b id="mult">1</b></span>
+      <span id="hud-score">0</span>
+    </div>
+    <div class="timerbar"><div id="timer-fill"></div></div>
+    <h2 id="q-text" class="qtext"></h2>
+    <div id="choices" class="choices"></div>
+    <p id="fun" class="fun hidden"></p>
+  </main>
+
+  <!-- RESULTS -->
+  <main id="v-done" class="wrap hidden">
+    <div class="done-card" id="done-card">
+      <div class="done-emoji" id="done-big">🎉</div>
+      <h2 id="done-headline">Dash complete!</h2>
+      <div class="done-score"><span id="done-score">0</span><small> pts</small></div>
+      <div class="emoji-row" id="emoji-row"></div>
+      <p id="done-sub" class="done-sub"></p>
+      <div class="done-actions">
+        <button id="share-btn" class="big-btn">Share my score 🔗</button>
+        <button id="again-btn" class="ghost-btn">Play again ↺</button>
+        <a href="/play" class="ghost-btn">All packs 🎮</a>
+      </div>
+      <p class="bd-cta">Want to <b>learn</b> what you missed? <a href="/app">Turn any video into a one-page deck ✨</a></p>
+    </div>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/dash.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{TITLE}} · Daily Dash · KooDeck</title>
+  <meta name="description" content="{{DESC}}" />
+  <meta property="og:title" content="{{TITLE}}" />
+  <meta property="og:description" content="{{DESC}}" />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#4f3ff0" />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/dash.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">▶</span><span class="brand-name">KooDeck</span></a>
+  </header>
+  <main class="wrap">
+    <div class="done-card" style="margin-top:6vh;">
+      <div class="done-emoji">⚔️</div>
+      <h2 id="ch-title" style="font-family:var(--font-display);font-size:clamp(22px,6vw,30px);margin:6px 0 2px;">Challenge!</h2>
+      <div class="done-score"><span id="ch-score">0</span><small> pts</small></div>
+      <div class="emoji-row" id="ch-row"></div>
+      <p class="done-sub">Same 5 questions. No sign-up. Think you can beat it?</p>
+      <div class="done-actions">
+        <a id="accept" class="big-btn" style="text-decoration:none;display:grid;place-items:center;" href="/">Accept the challenge ⚡</a>
+        <a href="/play" class="ghost-btn">Just play Daily Dash 🎮</a>
+      </div>
+    </div>
+  </main>
+  <script id="ch-data" type="application/json">{{CH_JSON}}</script>
+  <script>
+    (function () {
+      var c = JSON.parse(document.getElementById("ch-data").textContent);
+      document.getElementById("ch-title").textContent = c.name + " scored " + c.score + " — beat it!";
+      document.getElementById("ch-score").textContent = c.score;
+      document.getElementById("ch-row").textContent = c.emojiRow || "";
+      document.getElementById("accept").href = "/play?challenge=" + encodeURIComponent(c.slug);
+    })();
+  </script>
+</body>
+</html>
