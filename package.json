@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node scripts/selftest.js && node scripts/mobile-test.js && node scripts/image-test.js && node scripts/remix-test.js && node scripts/landing-test.js && node scripts/classroom-test.js && node scripts/game-test.js && node scripts/security-test.js && node scripts/auth-test.js && node scripts/merge-test.js",
+    "test": "node scripts/selftest.js && node scripts/mobile-test.js && node scripts/image-test.js && node scripts/remix-test.js && node scripts/landing-test.js && node scripts/classroom-test.js && node scripts/game-test.js && node scripts/security-test.js && node scripts/auth-test.js && node scripts/merge-test.js && node scripts/feature-test.js",
     "test:functional": "node scripts/selftest.js",
     "test:mobile": "node scripts/mobile-test.js",
     "test:image": "node scripts/image-test.js",
@@ -23,7 +23,8 @@
     "test:security": "node scripts/security-test.js",
     "test:auth": "node scripts/auth-test.js",
     "test:e2e": "node scripts/e2e-validate.js",
-    "test:merge": "node scripts/merge-test.js"
+    "test:merge": "node scripts/merge-test.js",
+    "test:feature": "node scripts/feature-test.js"
   },
   "dependencies": {
     "@resvg/resvg-js": "^2.6.2",

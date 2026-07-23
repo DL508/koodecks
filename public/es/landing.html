@@ -26,7 +26,9 @@
     </a>
     <nav class="topnav">
       <a href="#examples">Ejemplos</a>
+      <a href="/es/today">Decks de hoy</a>
       <a href="/es/play">Reto Diario</a>
+      <a href="/es/dashes">Todos los Retos</a>
       <a href="#how">Cómo funciona</a>
       <a href="/es/pricing">Precios</a>
       <a href="/es/login" id="nav-login">Iniciar sesión</a>
@@ -157,7 +159,6 @@
       { slug: "ejemplo-ciclo-agua",    subject: "Ciencias",    emoji: "💧", title: "El increíble viaje del agua",    tint: "#8fd8ef" },
       { slug: "ejemplo-fracciones",    subject: "Matemáticas", emoji: "🍕", title: "Fracciones: repartir parejo",    tint: "#ffd3ea" },
       { slug: "ejemplo-fotosintesis",  subject: "Ciencias",    emoji: "🌱", title: "La receta secreta de las hojas", tint: "#dff2bd" },
-      { slug: "ejemplo-sistema-solar", subject: "Espacio",     emoji: "🪐", title: "Un paseo por el sistema solar",  tint: "#c9c2ff" },
     ];
     const grid = $("ex-grid");
     EXAMPLES.forEach((e) => {
@@ -249,5 +250,6 @@
     document.addEventListener("click", () => $("lang-drop").classList.add("hidden"));
   })();
   </script>
+  <script src="/es/chrome.js" defer></script>
 </body>
 </html>

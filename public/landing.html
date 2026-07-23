@@ -26,7 +26,9 @@
     </a>
     <nav class="topnav">
       <a href="#examples">Examples</a>
+      <a href="/today">Today's Decks</a>
       <a href="/play">Daily Dash</a>
+      <a href="/dashes">All Dashes</a>
       <a href="#how">How it works</a>
       <a href="/pricing">Pricing</a>
       <a href="/login" id="nav-login">Log in</a>
@@ -157,7 +159,6 @@
       { slug: "example-water-cycle",   subject: "Science", emoji: "💧", title: "The Amazing Water Loop",   tint: "#8fd8ef" },
       { slug: "example-fractions",     subject: "Math",    emoji: "🍕", title: "Fractions = Fair Shares",  tint: "#ffd3ea" },
       { slug: "example-photosynthesis",subject: "Science", emoji: "🌱", title: "The Leaf's Sunlight Recipe", tint: "#dff2bd" },
-      { slug: "example-solar-system",  subject: "Space",   emoji: "🪐", title: "A Tour of the Solar System", tint: "#c9c2ff" },
     ];
     const grid = $("ex-grid");
     EXAMPLES.forEach((e) => {
@@ -166,7 +167,8 @@
       a.href = "/d/" + e.slug;
       a.innerHTML =
         '<div class="ex-thumb" style="background:' + e.tint + '">' +
-          '<img loading="lazy" alt="Preview of ' + e.title + '" src="/d/' + e.slug + '/image.png" />' +
+          '<img loading="lazy" alt="Preview of ' + e.title + '" src="/d/' + e.slug + '/image.png" ' +
+          'onerror="this.style.display=\'none\';this.parentNode.classList.add(\'ex-thumb-fallback\');this.parentNode.setAttribute(\'data-emoji\',\'' + e.emoji + '\');" />' +
         '</div>' +
         '<div class="ex-body">' +
           '<span class="ex-badge">' + e.emoji + ' ' + e.subject + '</span>' +
@@ -249,5 +251,6 @@
     document.addEventListener("click", () => $("lang-drop").classList.add("hidden"));
   })();
   </script>
+  <script src="/chrome.js" defer></script>
 </body>
 </html>

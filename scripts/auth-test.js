@@ -112,10 +112,13 @@ const longText = "This is enough pasted text to pass the input gate for deck cre
   });
 
   console.log("\n3) Freemium: the 3-decks/day limit");
-  await t("deck creation without an account → 401 needsAuth", async () => {
+  await t("deck creation WITHOUT an account now succeeds (students create free)", async () => {
+    // Item 6: students can create without an account (bounded by a per-IP daily cap).
     const r = await realFetch(B + "/api/decks", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ pastedText: longText }) });
-    assert.equal(r.status, 401);
-    assert.equal((await r.json()).needsAuth, true);
+    assert.equal(r.status, 200, "anonymous creation should succeed, got " + r.status);
+    const d = await r.json();
+    assert.ok(d.slug, "should return a deck slug");
+    assert.equal(d.deck.ownerEmail, null, "anonymous deck has no owner");
   });
   await t("free user can make 3 decks", async () => {
     for (let i = 0; i < 3; i++) {

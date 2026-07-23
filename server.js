@@ -7,7 +7,7 @@ const fs = require("fs");
 const express = require("express");
 const { extractVideoId, fetchVideoMeta, fetchTranscript } = require("./lib/youtube");
 const { runPipeline, GRADE_BANDS } = require("./lib/pipeline");
-const { saveDeck, getDeck, updateDeck } = require("./lib/store");
+const { saveDeck, getDeck, updateDeck, decksToday, decksByOwner, allDashes } = require("./lib/store");
 const { buildDeckSvg, renderPng } = require("./lib/image");
 const { seedExamples } = require("./lib/examples");
 const { getPack, listPacks } = require("./lib/packs");
@@ -95,6 +95,23 @@ function rateLimit(req, res, next) {
 
 const THEMES = ["space", "ocean", "jungle", "candy", "comic", "notebook"];
 
+// Anonymous ("student", no account) creation is free but capped per IP per day
+// so it can't run up the AI bill. Registered users have their own account limit.
+const ANON_DAILY_LIMIT = 3;
+const anonUsage = new Map(); // ip -> { day: "YYYY-MM-DD", count }
+function anonCanCreate(ip) {
+  const day = new Date().toISOString().slice(0, 10);
+  const rec = anonUsage.get(ip);
+  if (!rec || rec.day !== day) return true;
+  return rec.count < ANON_DAILY_LIMIT;
+}
+function anonRecord(ip) {
+  const day = new Date().toISOString().slice(0, 10);
+  const rec = anonUsage.get(ip);
+  if (!rec || rec.day !== day) anonUsage.set(ip, { day, count: 1 });
+  else rec.count += 1;
+}
+
 // Substance cache: the AI extraction/design for a given video at a given grade
 // band is identical no matter who asks, so we cache it. The SECOND person to
 // deck a popular video (at the same level) skips both AI calls entirely — the
@@ -126,22 +143,31 @@ app.post("/api/decks", rateLimit, async (req, res) => {
     const ts = await verifyTurnstile((req.body || {}).turnstileToken, getClientIp(req));
     if (!ts.ok) return res.status(403).json({ error: "Please complete the security check and try again." });
 
-    // Deck creation (the AI-cost action) requires a free or paid account.
-    // Students/viewers never need this — they open shared links and can remix
-    // (zero-AI) without an account. Free accounts get 3 new decks per day.
-    // KOO_TEST_BYPASS_AUTH is ONLY set by the automated test suites; it must
-    // never be set in production (documented in the deployment guide).
+    // Deck creation is FREE for everyone, including students with no account.
+    // To bound AI cost/abuse, anonymous ("student") creation is limited per IP
+    // per day; registered free users get their own tracked daily limit; paid is
+    // unlimited. Turnstile + honeypot above already filter bots.
+    // KOO_TEST_BYPASS_AUTH is ONLY set by the automated test suites.
     const testBypass = process.env.KOO_TEST_BYPASS_AUTH === "1";
     const currentUser = testBypass ? null : auth.userFromRequest(req);
     if (!testBypass) {
-      if (!currentUser) {
-        return res.status(401).json({ error: "Please create a free account or log in to make decks.", needsAuth: true });
-      }
-      if (!auth.canCreate(currentUser)) {
-        return res.status(402).json({
-          error: `You've used your ${auth.FREE_DAILY_LIMIT} free decks for today. Upgrade for unlimited decks, or come back tomorrow!`,
-          needsUpgrade: true,
-        });
+      if (currentUser) {
+        // Registered: enforce the account's daily allowance (3/day free, unlimited paid)
+        if (!auth.canCreate(currentUser)) {
+          return res.status(402).json({
+            error: `You've used your ${auth.FREE_DAILY_LIMIT} free decks for today. Upgrade for unlimited decks, or come back tomorrow!`,
+            needsUpgrade: true,
+          });
+        }
+      } else {
+        // Anonymous student: per-IP daily cap to bound cost (no account needed).
+        if (!anonCanCreate(getClientIp(req))) {
+          return res.status(402).json({
+            error: `You've made your ${ANON_DAILY_LIMIT} free decks for today. Create a free account for more, or come back tomorrow!`,
+            needsUpgrade: true,
+            anonLimit: true,
+          });
+        }
       }
     }
 
@@ -212,6 +238,7 @@ app.post("/api/decks", rateLimit, async (req, res) => {
       lang: deckLang,
       title: layout.headline || substance.topic || meta.title,
       authorName: "",
+      ownerEmail: currentUser ? currentUser.email : null, // null = anonymous student deck
       theme: chosenTheme,
       gradeBand,
       videoId,
@@ -225,6 +252,7 @@ app.post("/api/decks", rateLimit, async (req, res) => {
     // The editKey is returned once, only to the creator — it lets them rename the deck.
     const { editKey, ...publicDeck } = deck;
     if (currentUser) auth.recordCreation(currentUser.email);
+    else if (!testBypass) anonRecord(getClientIp(req));
     res.json({ slug: deck.slug, editKey, deck: publicDeck });
   } catch (err) {
     if (err.message === "MISSING_API_KEY") {
@@ -243,6 +271,12 @@ app.post("/api/decks", rateLimit, async (req, res) => {
 });
 
 // ---------- API: read a deck ----------
+// NOTE: /api/decks/today must be declared BEFORE /api/decks/:slug, or "today"
+// would be captured as a slug.
+app.get("/api/decks/today", (req, res) => {
+  const lang = req.query.lang === "es" ? "es" : req.query.lang === "en" ? "en" : null;
+  res.json({ decks: decksToday(lang).slice(0, 60) });
+});
 app.get("/api/decks/:slug", (req, res) => {
   const deck = getDeck(req.params.slug);
   if (!deck) return res.status(404).json({ error: "Deck not found." });
@@ -453,6 +487,13 @@ app.get("/signup", (_req, res) => res.sendFile(path.join(__dirname, "public", "l
 app.get("/pricing", (_req, res) => res.sendFile(path.join(__dirname, "public", "pricing.html")));
 app.get("/account", (_req, res) => res.sendFile(path.join(__dirname, "public", "account.html")));
 
+// New pages: contact, FAQ, and the listing pages (today's decks, all dashes, my decks)
+const staticPage = (dir, file) => (_req, res) => res.sendFile(path.join(__dirname, "public", dir, file));
+for (const p of ["contact", "faq", "today", "dashes", "mydecks"]) {
+  app.get("/" + p, staticPage(".", p + ".html"));
+  app.get("/es/" + p, staticPage("es", p + ".html"));
+}
+
 const authHits = new Map();
 function authRateLimit(req, res, next) {
   const ip = getClientIp(req);
@@ -494,6 +535,72 @@ app.get("/api/auth/me", (req, res) => {
 
 // ---------- Daily Dash game (the /play subpage) ----------
 app.get("/api/daily", (_req, res) => res.json(getDaily()));
+
+// ---------- Listing endpoints (today's decks, my decks, all community dashes) ----------
+app.get("/api/dashes", (req, res) => {
+  const lang = req.query.lang === "es" ? "es" : req.query.lang === "en" ? "en" : null;
+  res.json({ dashes: allDashes(lang).slice(0, 60) });
+});
+app.get("/api/my/decks", (req, res) => {
+  const u = auth.userFromRequest(req);
+  if (!u) return res.status(401).json({ error: "Log in to see your decks.", needsAuth: true });
+  res.json({ decks: decksByOwner(u.email) });
+});
+
+// Turn a deck into a playable Daily-Dash-style pack. Distractors are drawn from
+// the deck's other quiz answers + vocab (no extra AI call). Creator authorizes
+// with the editKey they received when the deck was made (works for account-less
+// student creators too).
+function deckToDashPack(deck) {
+  const quiz = (deck.substance && deck.substance.quiz) || [];
+  const vocab = (deck.substance && deck.substance.vocab) || [];
+  const answerPool = quiz.map((q) => String(q.a)).concat(vocab.map((v) => v.word)).filter(Boolean);
+  const clean = (s) => String(s || "").slice(0, 90);
+  const questions = quiz.slice(0, 5).map((item) => {
+    const correct = clean(item.a);
+    // pick up to 3 distinct distractors from the pool, excluding the correct one
+    const pool = [...new Set(answerPool.map(clean))].filter((x) => x && x !== correct);
+    for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+    const distractors = pool.slice(0, 3);
+    while (distractors.length < 3) distractors.push(["None of these", "All of these", "Not sure"][distractors.length]); // safe fallers
+    const choices = [correct, ...distractors];
+    for (let i = choices.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [choices[i], choices[j]] = [choices[j], choices[i]]; }
+    return { q: clean(item.q), choices, a: choices.indexOf(correct), fun: clean((deck.substance && deck.substance.fun_fact) || "") };
+  }).filter((q) => q.q && q.choices.length === 4 && q.a >= 0);
+  return {
+    id: "deck-" + deck.slug,
+    title: deck.title || "Community Dash",
+    emoji: (deck.layout && deck.layout.hero_emoji) || "✨",
+    theme: deck.theme || "space",
+    subject: (deck.substance && deck.substance.topic) || "",
+    fromDeck: deck.slug,
+    lang: deck.lang || "en",
+    questions,
+  };
+}
+
+app.post("/api/decks/:slug/to-dash", (req, res) => {
+  const deck = getDeck(req.params.slug);
+  if (!deck) return res.status(404).json({ error: "Deck not found." });
+  const u = auth.userFromRequest(req);
+  const key = (req.body || {}).editKey;
+  const authorized = (u && deck.ownerEmail && u.email === deck.ownerEmail) || (key && key === deck.editKey);
+  if (!authorized) return res.status(403).json({ error: "Only the deck's creator can turn it into a Dash." });
+  const pack = deckToDashPack(deck);
+  if (pack.questions.length < 3) {
+    return res.status(422).json({ error: "This deck doesn't have enough quiz questions to make a Dash. Try a video with more content." });
+  }
+  updateDeck(req.params.slug, { isDash: true });
+  res.json({ ok: true, dashSlug: deck.slug, questions: pack.questions.length });
+});
+
+// Play a community dash built from a deck
+app.get("/api/dash/:slug", (req, res) => {
+  const deck = getDeck(req.params.slug);
+  if (!deck || !deck.isDash) return res.status(404).json({ error: "Dash not found." });
+  res.json({ pack: deckToDashPack(deck) });
+});
+
 app.get("/api/packs", (_req, res) => res.json({ packs: listPacks() }));
 app.get("/api/packs/:id", (req, res) => {
   const p = getPack(req.params.id);

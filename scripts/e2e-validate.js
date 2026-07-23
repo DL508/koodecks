@@ -202,10 +202,12 @@ const LONG = "A volcano is an opening in the Earth's crust. ".repeat(12);
     assert.equal((await fourth.json()).needsUpgrade, true);
     assert.equal((await (await F.get("/api/auth/me")).json()).user.remainingToday, 0);
   });
-  await t("E", "anonymous deck creation (with human token, no session) → 401 needsAuth", async () => {
-    const r = await realFetch(B + "/api/decks", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ pastedText: LONG, turnstileToken: "good-token" }) });
-    assert.equal(r.status, 401, "status " + r.status);
-    assert.equal((await r.json()).needsAuth, true);
+  await t("E", "anonymous deck creation (student, no account) now succeeds", async () => {
+    // Item 6: students create for free (bounded by a per-IP daily cap, tested separately).
+    // Use a distinct IP so this isn't affected by earlier deck rate limits.
+    const r = await realFetch(B + "/api/decks", { method: "POST", headers: { "content-type": "application/json", "x-forwarded-for": "88.88.0.1" }, body: JSON.stringify({ pastedText: LONG, turnstileToken: "good-token" }) });
+    assert.equal(r.status, 200, "status " + r.status);
+    assert.equal((await r.json()).deck.ownerEmail, null, "anonymous deck has no owner");
   });
 
   // ===== F. Sharing surfaces + remix (account-less) =====
