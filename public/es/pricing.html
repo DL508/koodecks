@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Precios · KooDeck</title>
+  <meta name="theme-color" content="#4f3ff0" />
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@0,600;0,700;0,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/es/styles.css" />
+  <style>
+    .price-wrap { max-width: 720px; margin: 4vh auto 0; padding: 0 18px 40px; }
+    .price-head { text-align:center; margin-bottom:24px; }
+    .price-head h1 { font-family:var(--font-display); font-size:clamp(26px,5vw,36px); margin:0 0 6px; }
+    .price-head p { font-weight:600; opacity:.82; margin:0; }
+    .bill-toggle { display:flex; justify-content:center; gap:8px; margin:18px 0 24px; }
+    .bill-opt { font:inherit; font-weight:800; font-size:14px; cursor:pointer; padding:9px 16px; min-height:44px; border:2.5px solid var(--ink); border-radius:12px; background:#fff; }
+    .bill-opt.on { background:var(--sun); }
+    .save-badge { font-size:11px; background:var(--mint,#2ec4a5); color:#fff; border:2px solid var(--ink); border-radius:999px; padding:1px 8px; margin-left:4px; }
+    .cards { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media (max-width:560px){ .cards{ grid-template-columns:1fr; } }
+    .plan { background:#fff; border:3px solid var(--ink); border-radius:20px; padding:22px; box-shadow:var(--shadow); }
+    .plan.featured { background:linear-gradient(135deg,#efeaff,#fff3d6); }
+    .plan h2 { font-family:var(--font-display); font-size:22px; margin:0 0 4px; }
+    .plan .amt { font-family:var(--font-display); font-size:38px; margin:8px 0 2px; }
+    .plan .amt small { font-size:15px; opacity:.6; font-weight:700; }
+    .plan .sub { font-weight:700; opacity:.7; font-size:12.5px; min-height:18px; }
+    .plan ul { list-style:none; padding:0; margin:16px 0; }
+    .plan li { font-weight:700; font-size:14px; padding:6px 0 6px 26px; position:relative; }
+    .plan li::before { content:"✓"; position:absolute; left:0; color:var(--mint,#2ec4a5); font-weight:800; }
+    .plan .big-btn { width:100%; text-decoration:none; display:block; text-align:center; }
+    .ghost-btn { width:100%; text-decoration:none; display:block; text-align:center; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/es/"><span class="brand-mark">▶</span><span class="brand-name">KooDeck</span></a>
+    <a href="/es/account" class="ghost-btn" style="margin-left:auto;" id="account-link">Mi cuenta</a>
+  </header>
+
+  <main class="price-wrap">
+    <div class="price-head">
+      <h1>Precios simples para docentes ocupados</h1>
+      <p>Empieza gratis. Hazte Premium cuando lo necesites. Cancela cuando quieras.</p>
+    </div>
+
+    <div class="bill-toggle">
+      <button id="bill-year" class="bill-opt on">Anual <span class="save-badge">Ahorra 24%</span></button>
+      <button id="bill-month" class="bill-opt">Mensual</button>
+    </div>
+
+    <div class="cards">
+      <div class="plan">
+        <h2>Gratis</h2>
+        <div class="amt">$0</div>
+        <div class="sub">Para probarlo</div>
+        <ul>
+          <li><b>1 deck al día</b></li>
+          <li>Todos los grados y temas</li>
+          <li>Enlaces para compartir e imágenes</li>
+          <li>Juego Reto Diario</li>
+          <li>Compartir en Google Classroom</li>
+        </ul>
+        <a href="/es/signup" class="ghost-btn">Crear cuenta gratis</a>
+      </div>
+
+      <div class="plan featured">
+        <h2>Ilimitado</h2>
+        <div class="amt"><span id="price">$19</span><small id="per">/mes, cobro anual</small></div>
+        <div class="sub" id="price-note">Son $228 al año</div>
+        <ul>
+          <li><b>Decks ilimitados</b></li>
+          <li>Todo lo de Gratis</li>
+          <li>Sin límite diario</li>
+          <li>Generación prioritaria</li>
+          <li>Apoyas una herramienta educativa 💜</li>
+        </ul>
+        <a href="/es/account" class="big-btn" id="upgrade-btn">Hazte Premium</a>
+      </div>
+    </div>
+
+    <p style="text-align:center;font-weight:700;opacity:.65;font-size:12.5px;margin-top:22px;">
+      Las cuentas son para docentes y familias. Los estudiantes abren enlaces de decks sin necesidad de cuenta.
+    </p>
+  </main>
+
+  <script>
+  (function () {
+    const $ = (id) => document.getElementById(id);
+    let cycle = "year";
+    function paint() {
+      if (cycle === "year") {
+        $("price").textContent = "$19"; $("per").textContent = "/mes, cobro anual";
+        $("price-note").textContent = "Son $228 al año";
+      } else {
+        $("price").textContent = "$24.99"; $("per").textContent = "/mes, cobro mensual";
+        $("price-note").textContent = "Cambia a anual y ahorra 24%";
+      }
+      $("bill-year").classList.toggle("on", cycle === "year");
+      $("bill-month").classList.toggle("on", cycle === "month");
+      $("upgrade-btn").href = "/account?upgrade=" + cycle;
+    }
+    $("bill-year").onclick = () => { cycle = "year"; paint(); };
+    $("bill-month").onclick = () => { cycle = "month"; paint(); };
+    paint();
+    fetch("/api/auth/me").then((r) => r.json()).then((d) => {
+      if (!d.user) $("account-link").textContent = "Iniciar sesión";
+    }).catch(() => {});
+  })();
+  </script>
+  <script src="/es/chrome.js" defer></script>
+</body>
+</html>
