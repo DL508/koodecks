@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KooDeck — turn any video into a deck you can share</title>
+  <meta name="description" content="Paste a YouTube link and get a colorful one-page deck of the big ideas — made for students, easy to share." />
+  <meta name="theme-color" content="#4f3ff0" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:ital,wght@0,500;0,700;0,800;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/themes.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">
+      <span class="brand-mark">▶</span>
+      <span class="brand-name">KooDeck</span>
+    </a>
+    <span class="brand-tag">videos → one-page decks</span>
+    <a id="acct-link" href="/account" class="ghost-btn" style="margin-left:auto;font-size:13px;padding:7px 11px;">My account</a>
+  </header>
+
+  <main id="view-home" class="wrap">
+    <section class="hero">
+      <h1>Watched it? <span class="hl">Deck it.</span></h1>
+      <p class="hero-sub">Paste a YouTube link. Get the big ideas as one colorful page you can read in 30&nbsp;seconds — and share with your class.</p>
+
+      <form id="deck-form" class="maker" autocomplete="off">
+        <label class="field-label" for="yt-url">1 · Paste your YouTube link</label>
+        <div class="url-row">
+          <input id="yt-url" type="url" inputmode="url" placeholder="https://www.youtube.com/watch?v=..." />
+        </div>
+        <button type="button" id="toggle-paste" class="linklike">No captions? Paste text instead</button>
+        <textarea id="pasted-text" class="hidden" rows="6" placeholder="Paste the video's transcript or your notes here (at least a few paragraphs)…"></textarea>
+
+        <label class="field-label">2 · Who is this deck for?</label>
+        <div id="grade-row" class="chip-row" role="radiogroup" aria-label="Grade level">
+          <button type="button" class="chip" data-grade="k2">K–2</button>
+          <button type="button" class="chip selected" data-grade="35">3–5</button>
+          <button type="button" class="chip" data-grade="68">6–8</button>
+          <button type="button" class="chip" data-grade="912">9–12</button>
+        </div>
+
+        <label class="field-label">3 · Pick a look</label>
+        <div id="theme-row" class="theme-row" role="radiogroup" aria-label="Theme">
+          <button type="button" class="theme-pick selected" data-theme="space"><span class="swatch sw-space"></span>Space</button>
+          <button type="button" class="theme-pick" data-theme="ocean"><span class="swatch sw-ocean"></span>Ocean</button>
+          <button type="button" class="theme-pick" data-theme="jungle"><span class="swatch sw-jungle"></span>Jungle</button>
+          <button type="button" class="theme-pick" data-theme="candy"><span class="swatch sw-candy"></span>Candy</button>
+          <button type="button" class="theme-pick" data-theme="comic"><span class="swatch sw-comic"></span>Comic</button>
+          <button type="button" class="theme-pick" data-theme="notebook"><span class="swatch sw-notebook"></span>Notebook</button>
+        </div>
+
+        <input id="hp-website" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true"
+               style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" />
+        <button id="make-btn" class="big-btn" type="submit">Make my deck ✨</button>
+        <p id="form-error" class="error hidden" role="alert"></p>
+        <p style="text-align:center;margin:14px 0 0;font-weight:700;">
+          Just looking? <a href="/demo.html" style="color:var(--violet);font-weight:800;">Try the interactive demo →</a>
+        </p>
+      </form>
+    </section>
+
+    <section class="how">
+      <div class="how-step"><span class="how-emoji">🔗</span><h3>Paste</h3><p>Any YouTube video with captions works.</p></div>
+      <div class="how-step"><span class="how-emoji">🤖</span><h3>We read it</h3><p>The AI pulls out the big ideas — no ads, no fluff.</p></div>
+      <div class="how-step"><span class="how-emoji">🎨</span><h3>You share it</h3><p>Name your deck and send the link to anyone.</p></div>
+    </section>
+  </main>
+
+  <!-- Loading view -->
+  <main id="view-loading" class="wrap hidden" aria-live="polite">
+    <div class="loading-card">
+      <div class="loading-orb"></div>
+      <h2 id="loading-msg">Reading the video…</h2>
+      <p class="loading-sub">This usually takes 20–40 seconds.</p>
+    </div>
+  </main>
+
+  <!-- Result view -->
+  <main id="view-deck" class="wrap hidden">
+    <div class="deck-toolbar">
+      <a href="/app" class="ghost-btn">← Make another</a>
+      <div class="toolbar-actions">
+        <button id="edit-btn" class="ghost-btn">✏️ Name it</button>
+        <button id="gc-btn" class="ghost-btn" title="Post this deck as a link in Google Classroom. It's an AI summary — give it a quick review before assigning.">📚 Classroom</button>
+        <button id="image-btn" class="ghost-btn">🖼️ Save image</button>
+        <button id="share-btn" class="big-btn small">Share 🔗</button>
+      </div>
+    </div>
+
+    <div id="rename-panel" class="rename hidden">
+      <label for="deck-title">Deck title</label>
+      <input id="deck-title" maxlength="80" placeholder="My awesome deck" />
+      <label for="deck-author">Your name (or nickname)</label>
+      <input id="deck-author" maxlength="40" placeholder="e.g. Maya R." />
+      <button id="save-name" class="big-btn small">Save ✔</button>
+    </div>
+
+    <div id="deck-root"></div>
+  </main>
+
+  <footer class="foot">
+    <p>Made with KooDeck · Decks are AI summaries — always double-check important facts with your teacher.</p>
+  </footer>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/renderer.js"></script>
+  <script src="/classroom.js"></script>
+  <script src="/app.js"></script>
+  <script src="/chrome.js" defer></script>
+</body>
+</html>
